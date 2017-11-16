@@ -159,7 +159,7 @@ proto._renderCard = function() {
   updates.forEach(function(group) {
     return group
       .attr('cx', function (d) { return self.x(d[1]) })
-      .attr('cy', function () { return self.y(d[0]) })
+      .attr('cy', function (d) { return self.y(d[0]) })
       .attr('r', function (d) { return self.r(d[2]) })
       .style('fill', self.color)
   })
