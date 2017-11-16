@@ -1,14 +1,14 @@
 {
-  "name": "d3-punchcard",
+  "name": "bat-d3-punchcard",
   "version": "1.0.1",
-  "description": "Punchcard using D3.js",
+  "description": "Fork of Punchcard using D3.js",
   "main": "index.js",
   "scripts": {
     "build": "webpack"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/syaning/d3-punchcard.git"
+    "url": "git+https://github.com/batamar/d3-punchcard.git"
   },
   "keywords": [
     "d3",
