@@ -61,6 +61,7 @@ proto._init = function() {
   var innerHeight = this.innerHeight = height - margin.top - margin.bottom
   var unitWidth = this.unitWidth = innerWidth / 24
   var unitHeight = this.unitHeight = innerHeight / 7
+  var self = this;
 
   this.unitSize = Math.min(unitWidth, unitHeight)
 
@@ -69,7 +70,7 @@ proto._init = function() {
     .attr('width', width)
     .attr('height', height)
     .append('g')
-    .attr('transform', `translate(${margin.left}, ${margin.top})`)
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
   this.x = d3.scale.linear()
     .domain([0, 23])
@@ -83,13 +84,13 @@ proto._init = function() {
     .orient('bottom')
     .scale(this.x)
     .ticks(24)
-    .tickFormat((d, i) => this.xticks[i])
+    .tickFormat(function (d, i) { return self.xticks[i] })
 
   this.yAxis = d3.svg.axis()
     .orient('left')
     .scale(this.y)
     .ticks(7)
-    .tickFormat((d, i) => this.yticks[i])
+    .tickFormat(function (d, i) { self.yticks[i] })
 
   this._renderAxis()
 }
@@ -101,16 +102,24 @@ proto._init = function() {
  * @public
  */
 proto.render = function(data) {
-  data = (data || []).filter(d => {
-    return Array.isArray(d) &&
+  var data = data || []
+  var filteredData = []
+
+  for (var i = 0, l = data.length; i < l; i++) {
+    var d = data[i]
+
+    if (Array.isArray(d) &&
       d.length === 3 &&
       d[0] >= 0 &&
       d[0] <= 6 &&
       d[1] >= 0 &&
-      d[1] <= 23
-  })
+      d[1] <= 23) {
 
-  this.data = data
+      filteredData.push(d)
+    }
+  }
+
+  this.data = filteredData
   this._renderCard()
 }
 
@@ -122,7 +131,7 @@ proto.render = function(data) {
 proto._renderAxis = function() {
   this.chart.append('g')
     .attr('class', 'x axis')
-    .attr('transform', `translate(0, ${this.innerHeight})`)
+    .attr('transform', 'translate(0, ' + this.innerHeight + ')')
     .call(this.xAxis)
 
   this.chart.append('g')
@@ -136,8 +145,9 @@ proto._renderAxis = function() {
  * @private
  */
 proto._renderCard = function() {
+  var self = this;
   var data = this.data
-  var maxVal = d3.max(data, d => d[2])
+  var maxVal = d3.max(data, function(d) { return d[2] })
 
   this.r = d3.scale.sqrt()
     .domain([0, maxVal])
@@ -146,12 +156,12 @@ proto._renderCard = function() {
   var circles = this.chart.selectAll('circle').data(data)
 
   var updates = [circles, circles.enter().append('circle')]
-  updates.forEach(group => {
-    group
-      .attr('cx', d => this.x(d[1]))
-      .attr('cy', d => this.y(d[0]))
-      .attr('r', d => this.r(d[2]))
-      .style('fill', this.color)
+  updates.forEach(function(group) {
+    return group
+      .attr('cx', function (d) { return self.x(d[1]) })
+      .attr('cy', function () { return self.y(d[0]) })
+      .attr('r', function (d) { return self.r(d[2]) })
+      .style('fill', self.color)
   })
 
   circles.exit().remove()
